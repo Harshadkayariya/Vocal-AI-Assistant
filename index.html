@@ -12,7 +12,7 @@
         @keyframes pulse-animation { 0% { box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.7); } 70% { box-shadow: 0 0 0 30px rgba(56, 189, 248, 0); } 100% { box-shadow: 0 0 0 0 rgba(56, 189, 248, 0); } }
         h1 { color: white; font-size: 1.8rem; margin-bottom: 10px; }
         .status { font-size: 1.1rem; margin-top: 15px; font-weight: 500; }
-        #transcript { color: #94a3b8; margin-top: 10px; font-style: italic; padding: 0 20px; }
+        #transcript { color: #94a3b8; margin-top: 10px; font-style: italic; padding: 0 20px; min-height: 24px; }
         .hint { margin-top: 30px; font-size: 0.9rem; color: #64748b; }
     </style>
 </head>
@@ -24,9 +24,9 @@
     </div>
     
     <div class="status" id="status-text">Tap the Mic to Start</div>
-    <p id="transcript">Say "Hello", "Time", or ask about "Surat"</p>
+    <p id="transcript">Ask me anything!</p>
     
-    <div class="hint">Try: "Who is the PM?" or "Open YouTube"</div>
+    <div class="hint">Try: "What is Biology?" or "Open YouTube"</div>
 
     <script>
         const btn = document.getElementById('start-btn');
@@ -68,32 +68,31 @@
         }
 
         function handleCommand(cmd) {
-            // 1. Basic Greetings
+            // 1. Greetings
             if (cmd.includes('hello') || cmd.includes('hi')) {
                 speak("Hello! I am your AI assistant. How can I help you today?");
             } 
-            // 2. Time Command
+            // 2. Time
             else if (cmd.includes('time')) {
                 speak("The current time is " + new Date().toLocaleTimeString());
             } 
-            // 3. Surat Special Information
+            // 3. Special info for Surat
             else if (cmd.includes('surat')) {
-                speak("Surat is a major city in Gujarat, famous for its diamond and textile industries. It is also known as the Silk City of India.");
-                setTimeout(() => { window.open("https://www.google.com", "_blank"); }, 2000);
+                speak("Surat is a famous city in Gujarat, known for diamonds and textiles. Searching more details for you.");
+                setTimeout(() => { 
+                    window.open("https://www.google.com", "_blank"); 
+                }, 2000);
             }
-            // 4. Open Social Media
+            // 4. Social Media
             else if (cmd.includes('youtube')) {
-                speak("Opening YouTube for you.");
+                speak("Opening YouTube.");
                 window.open("https://www.youtube.com", "_blank");
             }
-            else if (cmd.includes('google')) {
-                speak("Opening Google.");
-                window.open("https://www.google.com", "_blank");
-            }
-            // 5. Smart Search for everything else (Who is, What is, etc.)
+            // 5. Smart Search (Fixing the URL issue)
             else {
-                speak("Let me find information about " + cmd);
-                window.open("https://www.google.com" + cmd, "_blank");
+                speak("Searching Google for " + cmd);
+                // encodeURIComponent makes sure there is a proper space in the URL
+                window.open("https://www.google.com" + encodeURIComponent(cmd), "_blank");
             }
         }
 
