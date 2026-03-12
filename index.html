@@ -1,55 +1,106 @@
-<script>
-    const btn = document.getElementById('start-btn');
-    const status = document.getElementById('status-text');
-    const transcript = document.getElementById('transcript');
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart AI Assistant | BS Final Year Project</title>
+    <style>
+        body { background: #0f172a; color: #38bdf8; font-family: 'Segoe UI', sans-serif; text-align: center; display: flex; flex-direction: column; justify-content: center; height: 100vh; margin: 0; overflow: hidden; }
+        .circle { width: 140px; height: 140px; background: rgba(56, 189, 248, 0.1); border: 3px solid #38bdf8; border-radius: 50%; margin: 0 auto; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.4s; position: relative; }
+        .circle svg { fill: #38bdf8; width: 60px; height: 60px; }
+        .pulse { animation: pulse-animation 1.5s infinite; background: rgba(56, 189, 248, 0.3); }
+        @keyframes pulse-animation { 0% { box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.7); } 70% { box-shadow: 0 0 0 30px rgba(56, 189, 248, 0); } 100% { box-shadow: 0 0 0 0 rgba(56, 189, 248, 0); } }
+        h1 { color: white; font-size: 1.8rem; margin-bottom: 10px; }
+        .status { font-size: 1.1rem; margin-top: 15px; font-weight: 500; }
+        #transcript { color: #94a3b8; margin-top: 10px; font-style: italic; padding: 0 20px; }
+        .hint { margin-top: 30px; font-size: 0.9rem; color: #64748b; }
+    </style>
+</head>
+<body>
 
-    // Speech Recognition Setup
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) {
-        alert("Your browser does not support Voice AI. Please use Google Chrome.");
-    }
-    const recognition = new SpeechRecognition();
-    recognition.lang = 'en-US'; // भाषा सेट करें
+    <h1>Smart AI Assistant</h1>
+    <div class="circle" id="start-btn">
+        <svg viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z""")/>><path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z""")/>></svg>
+    </div>
+    
+    <div class="status" id="status-text">Tap the Mic to Start</div>
+    <p id="transcript">Say "Hello", "Time", or ask about "Surat"</p>
+    
+    <div class="hint">Try: "Who is the PM?" or "Open YouTube"</div>
 
-    recognition.onstart = () => {
-        btn.classList.add('wave');
-        status.innerText = "Listening...";
-    };
+    <script>
+        const btn = document.getElementById('start-btn');
+        const status = document.getElementById('status-text');
+        const transcript = document.getElementById('transcript');
 
-    recognition.onresult = (event) => {
-        // यहाँ बदलाव किया गया है: रिजल्ट निकालने का सही तरीका
-        const command = event.results[0][0].transcript.toLowerCase();
-        transcript.innerText = "You said: " + command;
-        handleCommand(command);
-    };
-
-    recognition.onend = () => {
-        btn.classList.remove('wave');
-        status.innerText = "Tap to Speak Again";
-    };
-
-    function speak(text) {
-        window.speechSynthesis.cancel(); // पुरानी आवाज रोकें
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = 'en-US';
-        window.speechSynthesis.speak(utterance);
-    }
-
-    function handleCommand(cmd) {
-        if (cmd.includes('hello')) {
-            speak("Hello! I am your AI Assistant. How can I help you today?");
-        } else if (cmd.includes('time')) {
-            const time = new Date().toLocaleTimeString();
-            speak("The current time is " + time);
-        } else if (cmd.includes('google')) {
-            speak("Opening Google for you.");
-            setTimeout(() => { window.open("https://www.google.com", "_blank"); }, 1000);
-        } else {
-            speak("I heard you say " + cmd + ". Try asking for time or say hello.");
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRecognition) {
+            alert("Please use Google Chrome for Voice AI features.");
         }
-    }
+        
+        const recognition = new SpeechRecognition();
+        recognition.lang = 'en-US';
 
-    btn.addEventListener('click', () => {
-        recognition.start();
-    });
-</script>
+        recognition.onstart = () => {
+            btn.classList.add('pulse');
+            status.innerText = "I'm Listening...";
+            status.style.color = "#22c55e";
+        };
+
+        recognition.onresult = (event) => {
+            const command = event.results[0][0].transcript.toLowerCase();
+            transcript.innerText = "You said: " + command;
+            handleCommand(command);
+        };
+
+        recognition.onend = () => {
+            btn.classList.remove('pulse');
+            status.innerText = "Tap to Speak Again";
+            status.style.color = "#38bdf8";
+        };
+
+        function speak(text) {
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'en-US';
+            utterance.rate = 1;
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function handleCommand(cmd) {
+            // 1. Basic Greetings
+            if (cmd.includes('hello') || cmd.includes('hi')) {
+                speak("Hello! I am your AI assistant. How can I help you today?");
+            } 
+            // 2. Time Command
+            else if (cmd.includes('time')) {
+                speak("The current time is " + new Date().toLocaleTimeString());
+            } 
+            // 3. Surat Special Information
+            else if (cmd.includes('surat')) {
+                speak("Surat is a major city in Gujarat, famous for its diamond and textile industries. It is also known as the Silk City of India.");
+                setTimeout(() => { window.open("https://www.google.com", "_blank"); }, 2000);
+            }
+            // 4. Open Social Media
+            else if (cmd.includes('youtube')) {
+                speak("Opening YouTube for you.");
+                window.open("https://www.youtube.com", "_blank");
+            }
+            else if (cmd.includes('google')) {
+                speak("Opening Google.");
+                window.open("https://www.google.com", "_blank");
+            }
+            // 5. Smart Search for everything else (Who is, What is, etc.)
+            else {
+                speak("Let me find information about " + cmd);
+                window.open("https://www.google.com" + cmd, "_blank");
+            }
+        }
+
+        btn.addEventListener('click', () => {
+            recognition.start();
+        });
+    </script>
+</body>
+        </html>
+            
