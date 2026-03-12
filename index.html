@@ -3,102 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart AI Assistant | BS Final Year Project</title>
+    <title>Smart AI Assistant</title>
     <style>
-        body { background: #0f172a; color: #38bdf8; font-family: 'Segoe UI', sans-serif; text-align: center; display: flex; flex-direction: column; justify-content: center; height: 100vh; margin: 0; overflow: hidden; }
-        .circle { width: 140px; height: 140px; background: rgba(56, 189, 248, 0.1); border: 3px solid #38bdf8; border-radius: 50%; margin: 0 auto; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.4s; position: relative; }
-        .circle svg { fill: #38bdf8; width: 60px; height: 60px; }
-        .pulse { animation: pulse-animation 1.5s infinite; background: rgba(56, 189, 248, 0.3); }
-        @keyframes pulse-animation { 0% { box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.7); } 70% { box-shadow: 0 0 0 30px rgba(56, 189, 248, 0); } 100% { box-shadow: 0 0 0 0 rgba(56, 189, 248, 0); } }
-        h1 { color: white; font-size: 1.8rem; margin-bottom: 10px; }
-        .status { font-size: 1.1rem; margin-top: 15px; font-weight: 500; }
-        #transcript { color: #94a3b8; margin-top: 10px; font-style: italic; padding: 0 20px; min-height: 24px; }
-        .hint { margin-top: 30px; font-size: 0.9rem; color: #64748b; }
+        body { background: #0f172a; color: #38bdf8; font-family: sans-serif; text-align: center; display: flex; flex-direction: column; justify-content: center; height: 100vh; margin: 0; }
+        .circle { width: 140px; height: 140px; background: rgba(56, 189, 248, 0.1); border: 3px solid #38bdf8; border-radius: 50%; margin: 0 auto; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        .pulse { animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.7); } 70% { box-shadow: 0 0 0 20px rgba(56, 189, 248, 0); } 100% { box-shadow: 0 0 0 0 rgba(56, 189, 248, 0); } }
     </style>
 </head>
 <body>
-
     <h1>Smart AI Assistant</h1>
     <div class="circle" id="start-btn">
-        <svg viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z""")/>><path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z""")/>></svg>
+        <svg viewBox="0 0 24 24" width="50" height="50" fill="white"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z""")/>><path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z""")/>></svg>
     </div>
-    
-    <div class="status" id="status-text">Tap the Mic to Start</div>
-    <p id="transcript">Ask me anything!</p>
-    
-    <div class="hint">Try: "What is Biology?" or "Open YouTube"</div>
+    <p id="transcript">Tap to speak Biology or Surat</p>
 
     <script>
         const btn = document.getElementById('start-btn');
-        const status = document.getElementById('status-text');
         const transcript = document.getElementById('transcript');
+        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
 
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        if (!SpeechRecognition) {
-            alert("Please use Google Chrome for Voice AI features.");
-        }
-        
-        const recognition = new SpeechRecognition();
-        recognition.lang = 'en-US';
-
-        recognition.onstart = () => {
-            btn.classList.add('pulse');
-            status.innerText = "I'm Listening...";
-            status.style.color = "#22c55e";
-        };
+        recognition.onstart = () => btn.classList.add('pulse');
+        recognition.onend = () => btn.classList.remove('pulse');
 
         recognition.onresult = (event) => {
-            const command = event.results[0][0].transcript.toLowerCase();
-            transcript.innerText = "You said: " + command;
-            handleCommand(command);
-        };
-
-        recognition.onend = () => {
-            btn.classList.remove('pulse');
-            status.innerText = "Tap to Speak Again";
-            status.style.color = "#38bdf8";
+            const cmd = event.results[0][0].transcript.toLowerCase();
+            transcript.innerText = "You said: " + cmd;
+            handleCommand(cmd);
         };
 
         function speak(text) {
             window.speechSynthesis.cancel();
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = 'en-US';
-            utterance.rate = 1;
-            window.speechSynthesis.speak(utterance);
+            window.speechSynthesis.speak(new SpeechSynthesisUtterance(text));
         }
 
         function handleCommand(cmd) {
-            // 1. Greetings
-            if (cmd.includes('hello') || cmd.includes('hi')) {
-                speak("Hello! I am your AI assistant. How can I help you today?");
-            } 
-            // 2. Time
-            else if (cmd.includes('time')) {
-                speak("The current time is " + new Date().toLocaleTimeString());
-            } 
-            // 3. Special info for Surat
-            else if (cmd.includes('surat')) {
-                speak("Surat is a famous city in Gujarat, known for diamonds and textiles. Searching more details for you.");
-                setTimeout(() => { 
-                    window.open("https://www.google.com", "_blank"); 
-                }, 2000);
-            }
-            // 4. Social Media
-            else if (cmd.includes('youtube')) {
-                speak("Opening YouTube.");
-                window.open("https://www.youtube.com", "_blank");
-            }
-            // 5. Smart Search (Fixing the URL issue)
-            else {
+            if (cmd.includes('hello')) {
+                speak("Hello! How can I help you?");
+            } else if (cmd.includes('time')) {
+                speak("The time is " + new Date().toLocaleTimeString());
+            } else {
                 speak("Searching Google for " + cmd);
-                // encodeURIComponent makes sure there is a proper space in the URL
+                // यहाँ encodeURIComponent का इस्तेमाल हुआ है जो एरर ठीक कर देगा
                 window.open("https://www.google.com" + encodeURIComponent(cmd), "_blank");
             }
         }
 
-        btn.addEventListener('click', () => {
-            recognition.start();
-        });
+        btn.addEventListener('click', () => recognition.start());
     </script>
 </body>
         </html>
